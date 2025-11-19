@@ -1,0 +1,29 @@
+
+# Simplified Makefile for glsl_cube lab
+# Build each src/glsl_cubeN.cpp into cubeN.exe, linking the common glsl sources.
+
+SRC_DIR := src
+
+CXX := g++
+CXXFLAGS := -O0 -g -Wall
+LDLIBS := -lfreeglut -lopengl32 -lglu32 -lglew32
+
+# Source list: glsl_cube1..N in src/
+SRCS := $(wildcard $(SRC_DIR)/glsl_cube*.cpp)
+# Produce program names: src/glsl_cube1.cpp -> cube1.exe
+PROGS := $(patsubst $(SRC_DIR)/glsl_cube%.cpp,cube%.exe,$(SRCS))
+
+.PHONY: all clean run-cube%
+
+all: $(PROGS)
+
+# Pattern rule: compile cubeN.exe from src/glsl_cubeN.cpp and link with glsl/*.cpp
+cube%.exe: $(SRC_DIR)/glsl_cube%.cpp $(SRC_DIR)/glsl/*.cpp
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
+
+# run helper: make run-1
+run-cube%: cube%.exe
+	./$<
+
+clean:
+	rm -f $(PROGS)
